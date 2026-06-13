@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel for Data Analysis — Study Hub</title>
+<style>
+:root{
+  --ink:#1c2b1f;
+  --paper:#f6f3ec;
+  --sheet:#ffffff;
+  --grid:#cfe8d8;
+  --accent:#1f7a4c;
+  --accent2:#d98e3e;
+  --line:#dcd6c8;
+  --mono: "JetBrains Mono", "Fira Code", monospace;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:"Source Serif Pro", Georgia, serif;
+  background:var(--paper);
+  color:var(--ink);
+}
+header{
+  padding:48px 24px 28px;
+  border-bottom:3px solid var(--ink);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 79px, var(--grid) 79px 80px),
+    repeating-linear-gradient(0deg, transparent 0 23px, var(--grid) 23px 24px);
+  background-color:var(--sheet);
+}
+header h1{
+  font-family:var(--mono);
+  font-size:clamp(28px,5vw,46px);
+  margin:0;
+  letter-spacing:-1px;
+  font-weight:700;
+}
+header h1 span{color:var(--accent);}
+header p{
+  font-family:var(--mono);
+  font-size:14px;
+  color:#5a6a5e;
+  margin:8px 0 0;
+  letter-spacing:0.5px;
+}
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0;
+  border-bottom:2px solid var(--ink);
+  background:var(--sheet);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+nav button{
+  font-family:var(--mono);
+  font-size:14px;
+  font-weight:700;
+  padding:14px 22px;
+  border:none;
+  border-right:1px solid var(--line);
+  background:transparent;
+  cursor:pointer;
+  color:var(--ink);
+  transition:background .15s;
+}
+nav button:hover{background:var(--grid);}
+nav button.active{background:var(--ink);color:var(--sheet);}
+
+main{max-width:980px;margin:0 auto;padding:32px 24px 80px;}
+.tab{display:none;}
+.tab.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+h2.section-title{
+  font-family:var(--mono);
+  font-size:22px;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:8px;
+  margin:0 0 20px;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+}
+h2.section-title::before{
+  content:attr(data-cell);
+  font-size:12px;
+  color:var(--accent2);
+  background:var(--grid);
+  padding:2px 6px;
+  border:1px solid var(--ink);
+}
+
+/* SYLLABUS */
+.module{
+  background:var(--sheet);
+  border:1px solid var(--line);
+  border-left:6px solid var(--accent);
+  border-radius:4px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.module summary{
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:15px;
+  padding:14px 18px;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  list-style:none;
+}
+.module summary::-webkit-details-marker{display:none;}
+.module summary::after{
+  content:"+";
+  font-size:20px;
+  color:var(--accent);
+}
+.module[open] summary::after{content:"–";}
+.module .body{padding:0 18px 16px;font-size:15px;line-height:1.6;}
+.module ul{margin:6px 0;padding-left:22px;}
+.module li{margin:4px 0;}
+.module .tag{
+  font-family:var(--mono);
+  font-size:11px;
+  padding:2px 8px;
+  border:1px solid var(--ink);
+  border-radius:10px;
+  margin-left:8px;
+  color:#5a6a5e;
+}
+
+/* CHECKSHEET */
+.check-list{list-style:none;padding:0;margin:0;}
+.check-list li{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:9px 4px;
+  border-bottom:1px dashed var(--line);
+  font-size:15px;
+}
+.check-list input{
+  width:18px;height:18px;flex-shrink:0;margin-top:3px;
+  accent-color:var(--accent);
+}
+.check-list label{cursor:pointer;}
+.check-list li.done label{
+  text-decoration:line-through;
+  color:#9aa79f;
+}
+.progress-bar{
+  height:10px;
+  background:var(--grid);
+  border:1px solid var(--ink);
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+.progress-fill{
+  height:100%;background:var(--accent);width:0%;
+  transition:width .3s;
+}
+.progress-label{font-family:var(--mono);font-size:13px;margin-bottom:6px;}
+.check-group h3{
+  font-family:var(--mono);font-size:15px;color:var(--accent);
+  margin:22px 0 6px;
+}
+
+/* QUESTIONS */
+.q-controls{
+  display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:13px;
+}
+.q-controls input[type=text]{
+  flex:1;padding:8px 12px;border:1px solid var(--ink);border-radius:4px;
+  font-family:var(--mono);font-size:13px;background:var(--sheet);
+}
+.q-controls select{
+  padding:8px;border:1px solid var(--ink);border-radius:4px;
+  font-family:var(--mono);background:var(--sheet);
+}
+.qcard{
+  background:var(--sheet);border:1px solid var(--line);border-radius:4px;
+  margin-bottom:10px;overflow:hidden;
+}
+.qcard summary{
+  padding:12px 16px;cursor:pointer;font-size:15px;font-weight:600;
+  display:flex;gap:10px;list-style:none;
+}
+.qcard summary::-webkit-details-marker{display:none;}
+.qcard summary .num{
+  font-family:var(--mono);color:var(--accent);flex-shrink:0;min-width:32px;
+}
+.qcard .answer{
+  padding:0 16px 14px 58px;font-size:14px;line-height:1.6;color:#3c4a3e;
+  border-top:1px dashed var(--line);
+}
+.qcard .answer code{
+  background:var(--grid);padding:1px 5px;border-radius:3px;font-family:var(--mono);
+}
+.qcard .cat{
+  font-family:var(--mono);font-size:10px;background:var(--grid);
+  border:1px solid var(--ink);border-radius:10px;padding:1px 7px;
+  margin-left:auto;color:#5a6a5e;white-space:nowrap;align-self:center;
+}
+
+/* NOTES */
+.note-grid{display:grid;gap:18px;}
+.note{
+  background:var(--sheet);border:1px solid var(--line);border-radius:4px;
+  padding:18px 20px;border-top:4px solid var(--accent2);
+}
+.note h3{
+  font-family:var(--mono);font-size:17px;margin:0 0 8px;color:var(--ink);
+}
+.note p, .note li{font-size:14.5px;line-height:1.65;}
+.note ul{margin:8px 0;padding-left:20px;}
+.note code{
+  background:var(--grid);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:13px;
+}
+.note .formula{
+  display:block;background:var(--ink);color:#eafff0;font-family:var(--mono);
+  font-size:13px;padding:10px 14px;border-radius:4px;margin:8px 0;overflow-x:auto;
+}
+
+footer{
+  text-align:center;font-family:var(--mono);font-size:12px;color:#9aa79f;
+  padding:20px;border-top:1px solid var(--line);
+}
+@media(max-width:600px){
+  nav button{flex:1;padding:12px 8px;font-size:12px;}
+  .qcard .answer{padding-left:16px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Excel for Data <span>Analysis</span></h1>
+  <p>=STUDY_HUB(syllabus, checksheet, top-100-Q&A, notes)</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="syllabus">📘 Syllabus</button>
+  <button class="tab-btn" data-tab="check">✅ Checksheet</button>
+  <button class="tab-btn" data-tab="questions">❓ 100 Q&A</button>
+  <button class="tab-btn" data-tab="notes">📝 Notes</button>
+</nav>
+
+<main>
+
+<!-- ================= SYLLABUS ================= -->
+<section class="tab active" id="syllabus">
+<h2 class="section-title" data-cell="A1">Syllabus</h2>
+
+<details class="module" open>
+<summary>Module 1 — Excel Foundations <span class="tag">basics</span></summary>
+<div class="body">
+<ul>
+<li>Interface, ribbon, cell referencing (relative/absolute/mixed)</li>
+<li>Data types, formatting numbers/dates/currency</li>
+<li>Sorting, filtering, freeze panes, named ranges</li>
+<li>Data validation, conditional formatting</li>
+</ul>
+</div>
+</details>
+
+<details class="module">
+<summary>Module 2 — Core Formulas & Functions <span class="tag">formulas</span></summary>
+<div class="body">
+<ul>
+<li>Math: SUM, AVERAGE, COUNT, COUNTA, ROUND</li>
+<li>Logical: IF, AND, OR, NESTED IF, IFS</li>
+<li>Lookup: VLOOKUP, HLOOKUP, INDEX-MATCH, XLOOKUP</li>
+<li>Text: LEFT, RIGHT, MID, TRIM, CONCAT, TEXTJOIN, FIND/SEARCH</li>
+<li>Date/Time: TODAY, NOW, DATEDIF, EOMONTH, NETWORKDAYS</li>
+<li>Error handling: IFERROR, IFNA</li>
+</ul>
+</div>
+</details>
+
+<details class="module">
+<summary>Module 3 — Data Cleaning & Preparation <span class="tag">cleaning</span></summary>
+<div class="body">
+<ul>
+<li>Removing duplicates, blanks, and outliers</li>
+<li>Text-to-columns, Flash Fill</li>
+<li>Find & Replace, wildcard searches</li>
+<li>Data validation rules and drop-downs</li>
+<li>Power Query basics: import, transform, merge, append</li>
+</ul>
+</div>
+</details>
+
+<details class="module">
+<summary>Module 4 — Aggregation & Summary Tools <span class="tag">analysis</span></summary>
+<div class="body">
+<ul>
+<li>SUMIF / SUMIFS / COUNTIF / COUNTIFS / AVERAGEIF / AVERAGEIFS</li>
+<li>SUBTOTAL, Subtotal feature on sorted data</li>
+<li>PivotTables: rows, columns, values, filters, slicers</li>
+<li>PivotCharts and calculated fields</li>
+</ul>
+</div>
+</details>
+
+<details class="module">
+<summary>Module 5 — Data Visualization <span class="tag">charts</span></summary>
+<div class="body">
+<ul>
+<li>Chart types: bar, line, pie, scatter, combo, waterfall</li>
+<li>Sparklines, conditional-format heatmaps</li>
+<li>Dashboard design principles, dynamic charts with named ranges</li>
+</ul>
+</div>
+</details>
+
+<details class="module">
+<summary>Module 6 — Advanced Analytical Tools <span class="tag">advanced</span></summary>
+<div class="body">
+<ul>
+<li>Array formulas, dynamic arrays: UNIQUE, SORT, FILTER, SEQUENCE</li>
+<li>What-If Analysis: Goal Seek, Data Tables, Scenario Manager</li>
+<li>Solver basics</li>
+<li>Statistical functions: STDEV, VAR, CORREL, TREND, FORECAST</li>
+</ul>
+</div>
+</details>
+
+<details class="module">
+<summary>Module 7 — Automation & Reporting <span class="tag">automation</span></summary>
+<div class="body">
+<ul>
+<li>Recording and editing basic Macros (VBA intro)</li>
+<li>Templates, dashboards, report automation</li>
+<li>Linking workbooks, external data connections</li>
+<li>Best practices: documentation, version control, audit trails</li>
+</ul>
+</div>
+</details>
+
+</section>
+
+<!-- ================= CHECKSHEET ================= -->
+<section class="tab" id="check">
+<h2 class="section-title" data-cell="B1">Checksheet</h2>
+<div class="progress-label">Progress: <span id="progress-text">0 / 0</span></div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+<div class="check-group">
+<h3>Foundations</h3>
+<ul class="check-list">
+<li><input type="checkbox"><label>Understand relative vs absolute vs mixed references</label></li>
+<li><input type="checkbox"><label>Apply number, date, and currency formatting</label></li>
+<li><input type="checkbox"><label>Use sort, filter, and freeze panes</label></li>
+<li><input type="checkbox"><label>Set up data validation & conditional formatting</label></li>
+</ul>
+</div>
+
+<div class="check-group">
+<h3>Formulas & Functions</h3>
+<ul class="check-list">
+<li><input type="checkbox"><label>Use IF / nested IF / IFS confidently</label></li>
+<li><input type="checkbox"><label>Master VLOOKUP and INDEX-MATCH</label></li>
+<li><input type="checkbox"><label>Use XLOOKUP for modern lookups</label></li>
+<li><input type="checkbox"><label>Apply key text functions (LEFT/RIGHT/MID/TRIM)</label></li>
+<li><input type="checkbox"><label>Use date functions (DATEDIF, EOMONTH, NETWORKDAYS)</label></li>
+<li><input type="checkbox"><label>Wrap formulas with IFERROR/IFNA</label></li>
+</ul>
+</div>
+
+<div class="check-group">
+<h3>Data Cleaning</h3>
+<ul class="check-list">
+<li><input type="checkbox"><label>Remove duplicates and blank rows</label></li>
+<li><input type="checkbox"><label>Use Text-to-Columns and Flash Fill</label></li>
+<li><input type="checkbox"><label>Build a basic Power Query import & transform</label></li>
+<li><input type="checkbox"><label>Merge/append two tables with Power Query</label></li>
+</ul>
+</div>
+
+<div class="check-group">
+<h3>Aggregation</h3>
+<ul class="check-list">
+<li><input type="checkbox"><label>Use SUMIFS/COUNTIFS/AVERAGEIFS with multiple criteria</label></li>
+<li><input type="checkbox"><label>Build a PivotTable from raw data</label></li>
+<li><input type="checkbox"><label>Add slicers and a PivotChart</label></li>
+<li><input type="checkbox"><label>Create a calculated field in a Pivot</label></li>
+</ul>
+</div>
+
+<div class="check-group">
+<h3>Visualization</h3>
+<ul class="check-list">
+<li><input type="checkbox"><label>Build at least 4 chart types (bar/line/pie/scatter)</label></li>
+<li><input type="checkbox"><label>Add sparklines to a data table</label></li>
+<li><input type="checkbox"><label>Design a simple one-page dashboard</label></li>
+</ul>
+</div>
+
+<div class="check-group">
+<h3>Advanced & Automation</h3>
+<ul class="check-list">
+<li><input type="checkbox"><label>Use dynamic array functions (FILTER, UNIQUE, SORT)</label></li>
+<li><input type="checkbox"><label>Run Goal Seek and a Data Table scenario</label></li>
+<li><input type="checkbox"><label>Use STDEV, CORREL, TREND for basic stats</label></li>
+<li><input type="checkbox"><label>Record and run a simple macro</label></li>
+</ul>
+</div>
+
+</section>
+
+<!-- ================= QUESTIONS ================= -->
+<section class="tab" id="questions">
+<h2 class="section-title" data-cell="C1">100 Important Questions</h2>
+<div class="q-controls">
+  <input type="text" id="q-search" placeholder="Search questions...">
+  <select id="q-filter">
+    <option value="all">All categories</option>
+    <option value="Basics">Basics</option>
+    <option value="Formulas">Formulas</option>
+    <option value="Lookup">Lookup</option>
+    <option value="Cleaning">Cleaning</option>
+    <option value="Pivot">Pivot/Aggregation</option>
+    <option value="Charts">Charts</option>
+    <option value="Advanced">Advanced</option>
+  </select>
+</div>
+<div id="q-container"></div>
+</section>
+
+<!-- ================= NOTES ================= -->
+<section class="tab" id="notes">
+<h2 class="section-title" data-cell="D1">Notes — Every Topic</h2>
+<div class="note-grid">
+
+<div class="note">
+<h3>1. Cell References</h3>
+<p>Relative (<code>A1</code>) shifts when copied. Absolute (<code>$A$1</code>) stays fixed. Mixed (<code>$A1</code> or <code>A$1</code>) locks only row or column. Press <code>F4</code> to toggle.</p>
+</div>
+
+<div class="note">
+<h3>2. Logical Functions</h3>
+<p>IF tests a condition; IFS handles multiple conditions without nesting.</p>
+<span class="formula">=IFS(A1>90,"A",A1>75,"B",TRUE,"C")</span>
+<p>AND/OR combine conditions inside IF for multi-criteria checks.</p>
+</div>
+
+<div class="note">
+<h3>3. Lookup Functions</h3>
+<p>VLOOKUP searches the first column and returns a value from a specified column to the right — limited to left-to-right lookups.</p>
+<span class="formula">=VLOOKUP(lookup_value, table, col_index, FALSE)</span>
+<p>INDEX-MATCH and XLOOKUP overcome this — they search in any direction.</p>
+<span class="formula">=XLOOKUP(lookup_value, lookup_array, return_array)</span>
+</div>
+
+<div class="note">
+<h3>4. Text Functions</h3>
+<ul>
+<li><code>LEFT/RIGHT/MID</code> extract substrings</li>
+<li><code>TRIM</code> removes extra spaces</li>
+<li><code>TEXTJOIN</code> combines text with a delimiter, optionally ignoring blanks</li>
+<li><code>FIND</code> (case-sensitive) / <code>SEARCH</code> (not) locate substrings</li>
+</ul>
+</div>
+
+<div class="note">
+<h3>5. Date & Time</h3>
+<ul>
+<li><code>DATEDIF(start,end,"Y"/"M"/"D")</code> — difference in years/months/days</li>
+<li><code>EOMONTH(date,months)</code> — last day of a month n months away</li>
+<li><code>NETWORKDAYS(start,end)</code> — working days excluding weekends</li>
+</ul>
+</div>
+
+<div class="note">
+<h3>6. Error Handling</h3>
+<p>Wrap formulas to avoid #N/A or #DIV/0 errors showing to end users.</p>
+<span class="formula">=IFERROR(A1/B1, "N/A")</span>
+</div>
+
+<div class="note">
+<h3>7. Data Cleaning</h3>
+<ul>
+<li>Remove Duplicates (Data tab) deletes repeated rows based on chosen columns</li>
+<li>Flash Fill auto-detects a pattern (e.g. splitting names) from one example</li>
+<li>Text to Columns splits a column by delimiter or fixed width</li>
+</ul>
+</div>
+
+<div class="note">
+<h3>8. Power Query Basics</h3>
+<p>Get Data → import from file/web/database. Use the Power Query Editor to remove columns, change data types, filter rows, and merge or append queries before loading back to the worksheet.</p>
+</div>
+
+<div class="note">
+<h3>9. Conditional Aggregation</h3>
+<span class="formula">=SUMIFS(sum_range, range1, crit1, range2, crit2)</span>
+<p>COUNTIFS and AVERAGEIFS follow the same pattern — range/criteria pairs, all conditions must be true (AND logic).</p>
+</div>
+
+<div class="note">
+<h3>10. PivotTables</h3>
+<p>Drag fields into Rows, Columns, Values, and Filters areas to summarize large datasets instantly. Right-click → Value Field Settings to change Sum/Count/Average. Add Slicers for interactive filtering and refresh after source data changes.</p>
+</div>
+
+<div class="note">
+<h3>11. Charts & Visualization</h3>
+<ul>
+<li>Bar/column — compare categories</li>
+<li>Line — trends over time</li>
+<li>Pie — proportions of a whole (best with few categories)</li>
+<li>Scatter — relationship between two numeric variables</li>
+<li>Sparklines — tiny in-cell trend charts</li>
+</ul>
+</div>
+
+<div class="note">
+<h3>12. Dynamic Array Functions</h3>
+<ul>
+<li><code>UNIQUE(range)</code> — list distinct values</li>
+<li><code>SORT(range, col, order)</code> — sort dynamically</li>
+<li><code>FILTER(range, condition)</code> — extract matching rows</li>
+<li><code>SEQUENCE(rows, cols, start, step)</code> — generate number series</li>
+</ul>
+</div>
+
+<div class="note">
+<h3>13. What-If Analysis</h3>
+<ul>
+<li><strong>Goal Seek</strong> — finds an input value to reach a target output</li>
+<li><strong>Data Tables</strong> — shows how output changes across a range of inputs</li>
+<li><strong>Scenario Manager</strong> — saves and compares different input sets</li>
+</ul>
+</div>
+
+<div class="note">
+<h3>14. Statistical Functions</h3>
+<ul>
+<li><code>STDEV.S/STDEV.P</code> — sample/population standard deviation</li>
+<li><code>CORREL</code> — correlation coefficient between two ranges</li>
+<li><code>TREND</code> / <code>FORECAST</code> — predict values via linear regression</li>
+</ul>
+</div>
+
+<div class="note">
+<h3>15. Macros & Automation</h3>
+<p>Record Macro (Developer tab) captures a sequence of actions as VBA code to replay later. Assign to a button or shortcut key for one-click repetitive tasks like formatting or report generation.</p>
+</div>
+
+</div>
+</section>
+
+</main>
+
+<footer>Built for focused practice — toggle tabs above. Checkbox progress is per-session.</footer>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Checksheet progress
+const boxes = document.querySelectorAll('.check-list input[type=checkbox]');
+function updateProgress(){
+  const total = boxes.length;
+  const done = [...boxes].filter(b=>b.checked).length;
+  document.getElementById('progress-text').textContent = done + ' / ' + total;
+  document.getElementById('progress-fill').style.width = (total? (done/total*100):0) + '%';
+}
+boxes.forEach(b=>{
+  b.addEventListener('change',()=>{
+    b.closest('li').classList.toggle('done', b.checked);
+    updateProgress();
+  });
+});
+updateProgress();
+
+// 100 Questions data
+const questions = [
+// Basics
+["What is a cell reference in Excel?","A cell reference identifies a cell's location using its column letter and row number, e.g. <code>B3</code>.","Basics"],
+["Difference between relative and absolute references?","Relative references (<code>A1</code>) change when copied to another cell; absolute references (<code>$A$1</code>) stay fixed.","Basics"],
+["What does pressing F4 do to a reference?","Cycles through reference types: relative → absolute → mixed → mixed → relative.","Basics"],
+["What is Freeze Panes used for?","Keeps specific rows/columns visible while scrolling through large datasets.","Basics"],
+["How do you apply Conditional Formatting?","Home tab → Conditional Formatting → choose a rule (e.g. highlight cells greater than a value) to format cells automatically based on their content.","Basics"],
+["What is Data Validation?","A feature that restricts input in a cell, e.g. allowing only numbers in a range or values from a drop-down list.","Basics"],
+["How do you create a named range?","Select a range, type a name in the Name Box (top-left), and press Enter. Use the name directly in formulas.","Basics"],
+["What's the difference between .xlsx and .csv?",".xlsx stores formulas, formatting, charts, and multiple sheets; .csv stores only plain comma-separated values.","Basics"],
+["How do you sort data by multiple columns?","Data tab → Sort → Add Level to sort by a secondary (and further) column after the primary.","Basics"],
+["What is AutoFill?","Dragging the fill handle to copy a formula/value or continue a pattern (numbers, dates, days).","Basics"],
+["How do you lock a worksheet from editing?","Review tab → Protect Sheet, optionally with a password; unlocked cells (Format Cells → Protection) remain editable.","Basics"],
+["What is the purpose of the Name Box?","Quickly navigate to a cell/range by typing its reference or name, and to define named ranges.","Basics"],
+["How do you wrap text in a cell?","Home tab → Wrap Text, or Format Cells → Alignment → Wrap text.","Basics"],
+["What is a Format Cells dialog used for?","Customizing number format, alignment, font, border, and fill for selected cells.","Basics"],
+["How do you remove formatting but keep data?","Home tab → Clear → Clear Formats.","Basics"],
+
+// Formulas
+["Syntax of the IF function?","<code>=IF(condition, value_if_true, value_if_false)</code>","Formulas"],
+["How do nested IFs work?","An IF function placed inside another IF's true/false argument to test multiple conditions sequentially.","Formulas"],
+["What does IFS do differently from nested IF?","IFS evaluates a list of condition-value pairs in order and returns the first match, avoiding deeply nested IFs.","Formulas"],
+["Difference between AND and OR in logical tests?","AND returns TRUE only if all conditions are true; OR returns TRUE if at least one condition is true.","Formulas"],
+["What does SUMPRODUCT do?","Multiplies corresponding array elements and sums the results — useful for weighted sums and multi-condition counts.","Formulas"],
+["How do COUNT and COUNTA differ?","COUNT counts cells containing numbers only; COUNTA counts all non-empty cells regardless of type.","Formulas"],
+["What does ROUND(123.456,1) return?","123.5 — rounds to 1 decimal place.","Formulas"],
+["Difference between ROUND, ROUNDUP, and ROUNDDOWN?","ROUND rounds to nearest based on standard rules; ROUNDUP always rounds away from zero; ROUNDDOWN always rounds toward zero.","Formulas"],
+["What does CONCAT/CONCATENATE do?","Joins multiple text strings or cell values into one string.","Formulas"],
+["How does TEXTJOIN improve on CONCAT?","TEXTJOIN lets you specify a delimiter and optionally ignore empty cells across a range.","Formulas"],
+["What is the purpose of the & operator?","Concatenates text strings directly, e.g. <code>=A1&\" \"&B1</code>.","Formulas"],
+["How do you convert text to a number?","Use <code>VALUE(text)</code>, or multiply by 1, or use Paste Special → Multiply.","Formulas"],
+["What does ISBLANK check?","Returns TRUE if the referenced cell is empty.","Formulas"],
+["How do you reference another sheet in a formula?","<code>=SheetName!A1</code> — sheet name followed by an exclamation mark and the cell reference.","Formulas"],
+["What does the LEN function return?","The number of characters in a text string, including spaces.","Formulas"],
+["How do you extract the year from a date?","<code>=YEAR(date_cell)</code> returns the four-digit year.","Formulas"],
+["What does TODAY() return and how does it update?","The current date, refreshed automatically whenever the workbook recalculates.","Formulas"],
+["How do you calculate age from a birthdate?","<code>=DATEDIF(birthdate, TODAY(), \"Y\")</code> returns full years elapsed.","Formulas"],
+["What is the difference between NOW() and TODAY()?","NOW() returns current date and time; TODAY() returns only the date.","Formulas"],
+["How do you remove leading/trailing spaces from text?","<code>=TRIM(text)</code> removes extra spaces except single spaces between words.","Formulas"],
+["What does PROPER do?","Capitalizes the first letter of each word in a text string.","Formulas"],
+["How do you replace specific text within a string?","<code>=SUBSTITUTE(text, old_text, new_text)</code> replaces all (or specified) occurrences.","Formulas"],
+["What's the difference between FIND and SEARCH?","FIND is case-sensitive and doesn't allow wildcards; SEARCH is case-insensitive and supports wildcards (* and ?).","Formulas"],
+["How do you handle division errors gracefully?","Wrap the formula: <code>=IFERROR(A1/B1, 0)</code> returns 0 instead of #DIV/0.","Formulas"],
+["What does IFNA do differently from IFERROR?","IFNA only catches #N/A errors, leaving other error types (like #DIV/0) unaffected.","Formulas"],
+
+// Lookup
+["What does VLOOKUP stand for and what does it do?","Vertical Lookup — searches for a value in the first column of a range and returns a value from a specified column in the same row.","Lookup"],
+["VLOOKUP syntax?","<code>=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])</code>","Lookup"],
+["What does the fourth VLOOKUP argument (FALSE/TRUE) control?","FALSE requires an exact match; TRUE (or omitted) allows an approximate match on sorted data.","Lookup"],
+["Main limitation of VLOOKUP?","It can only search the leftmost column of the table and return values to its right — it cannot look left.","Lookup"],
+["How does HLOOKUP differ from VLOOKUP?","HLOOKUP searches across the first row of a table and returns a value from a specified row, instead of columns.","Lookup"],
+["What is INDEX-MATCH and why is it preferred?","MATCH finds the position of a value, and INDEX returns the value at that position — together they look up in any direction and don't break if columns are inserted.","Lookup"],
+["INDEX-MATCH syntax for a two-way lookup?","<code>=INDEX(data_range, MATCH(row_value, row_labels,0), MATCH(col_value, col_labels,0))</code>","Lookup"],
+["What is XLOOKUP and its main advantages?","A modern lookup function that searches in any direction, defaults to exact match, and can return arrays — replacing VLOOKUP/HLOOKUP/INDEX-MATCH in one function.","Lookup"],
+["XLOOKUP syntax?","<code>=XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], [match_mode], [search_mode])</code>","Lookup"],
+["How do you do a lookup that returns multiple matching rows?","Use <code>FILTER(return_range, lookup_range=criteria)</code>, which spills all matches into adjacent cells.","Lookup"],
+["What does MATCH return?","The relative position of a value within a range, not the value itself.","Lookup"],
+["How do you perform a case-sensitive lookup?","Use <code>EXACT</code> combined with INDEX/MATCH inside an array formula, since VLOOKUP/XLOOKUP are case-insensitive by default.","Lookup"],
+["What happens if VLOOKUP doesn't find a match with FALSE?","It returns the #N/A error.","Lookup"],
+["How do you look up a value across multiple sheets?","Use INDEX-MATCH/XLOOKUP with a 3D reference structure or consolidate data first, since lookup functions can't natively search across sheets in one call.","Lookup"],
+["What is an approximate match lookup useful for?","Assigning values from ranges/brackets, e.g. tax bands or grading scales, where the table is sorted ascending.","Lookup"],
+
+// Cleaning
+["What does Remove Duplicates do?","Deletes rows where selected columns have identical repeated values, keeping the first occurrence.","Cleaning"],
+["What is Flash Fill?","A feature that detects a pattern from one manually entered example and auto-completes the rest of the column accordingly.","Cleaning"],
+["What does Text to Columns do?","Splits a single column's content into multiple columns based on a delimiter (comma, space, etc.) or fixed width.","Cleaning"],
+["How do you find and replace using wildcards?","Use <code>*</code> for any number of characters and <code>?</code> for a single character in Find & Replace's search box.","Cleaning"],
+["What is Power Query used for?","Importing, cleaning, transforming, and combining data from various sources before loading it into Excel.","Cleaning"],
+["Difference between Merge and Append in Power Query?","Merge joins two tables side-by-side based on matching columns (like a SQL join); Append stacks tables on top of each other (union of rows).","Cleaning"],
+["How do you remove blank rows efficiently?","Select the data, use Go To Special → Blanks, then delete the selected rows, or filter and remove blanks in Power Query.","Cleaning"],
+["What does TRIM not remove?","Single spaces between words — it only removes leading, trailing, and extra internal spaces.","Cleaning"],
+["How do you standardize inconsistent date formats?","Use Text to Columns with Date selected as the column format, or Power Query's Change Type → Date with locale settings.","Cleaning"],
+["What is the purpose of Data Validation drop-down lists?","Restricts entries to a predefined list, reducing typos and ensuring consistent categorical data for analysis.","Cleaning"],
+["How can you identify outliers quickly in a dataset?","Use conditional formatting (e.g. highlight values beyond a threshold) or sort/filter combined with descriptive statistics like IQR.","Cleaning"],
+["What does the CLEAN function do?","Removes non-printable characters from text, often from data imported from other systems.","Cleaning"],
+["How do you convert numbers stored as text into actual numbers?","Select the cells, use the error-checking flag's 'Convert to Number' option, or multiply by 1, or use Text to Columns.","Cleaning"],
+["What's a quick way to check for hidden duplicate spaces causing mismatches?","Use <code>=LEN(A1)</code> to compare character counts, or wrap lookups with TRIM/CLEAN.","Cleaning"],
+
+// Pivot/Aggregation
+["SUMIF syntax?","<code>=SUMIF(range, criteria, [sum_range])</code> — sums values where the range meets a single condition.","Pivot"],
+["SUMIFS syntax and key difference from SUMIF?","<code>=SUMIFS(sum_range, criteria_range1, criteria1, ...)</code> — supports multiple AND conditions, with sum_range listed first.","Pivot"],
+["What does COUNTIFS do?","Counts cells that meet multiple criteria across one or more ranges, all combined with AND logic.","Pivot"],
+["How do you create a PivotTable?","Select your data, Insert tab → PivotTable, choose a location, then drag fields into Filters, Rows, Columns, and Values areas.","Pivot"],
+["How do you change a Pivot value from Sum to Average?","Click the value field → Value Field Settings → choose Average (or another summary function).","Pivot"],
+["What is a Slicer?","A visual filter control linked to a PivotTable/PivotChart that lets users interactively filter data with clickable buttons.","Pivot"],
+["How do you refresh a PivotTable after source data changes?","Right-click the PivotTable → Refresh, or PivotTable Analyze tab → Refresh.","Pivot"],
+["What is a Calculated Field in a PivotTable?","A custom field defined by a formula using existing Pivot fields, computed within the Pivot's summary logic.","Pivot"],
+["What does Group do in a PivotTable?","Combines row/column items (e.g. dates into months, or numbers into ranges/bins) for higher-level summaries.","Pivot"],
+["What is the SUBTOTAL function used for?","Performs aggregations (sum, average, count, etc.) that automatically ignore other SUBTOTAL results and optionally hidden rows.","Pivot"],
+["Difference between PivotTable and a regular formula-based summary?","PivotTables are interactive, reorganizable by drag-and-drop, and recalculate instantly, while formula summaries require manual formula edits for structural changes.","Pivot"],
+["How do you show values as % of total in a PivotTable?","Value Field Settings → Show Values As → % of Grand Total (or % of Column/Row Total).","Pivot"],
+["What is a PivotChart?","A chart generated directly from a PivotTable that updates dynamically as the Pivot is filtered or refreshed.","Pivot"],
+
+// Charts
+["Which chart type best shows trends over time?","Line charts, since they emphasize continuity and direction of change across a time axis.","Charts"],
+["When is a pie chart appropriate?","When showing proportions of a whole with a small number of categories (ideally under 6).","Charts"],
+["What does a scatter chart show?","The relationship/correlation between two numeric variables, with each point representing one data pair.","Charts"],
+["What are Sparklines?","Tiny charts embedded within a single cell to show trends alongside data, without taking up dedicated chart space.","Charts"],
+["How do you create a combo chart?","Select the data, Insert → Combo Chart (or change one series' chart type via Change Chart Type → Combo) to mix e.g. columns and a line.","Charts"],
+["What is a dynamic chart?","A chart whose data range automatically expands/contracts based on named ranges or Excel Tables as data is added or removed.","Charts"],
+["How do heatmaps work in Excel?","Conditional formatting's color scales apply a gradient of colors based on cell values, visually representing magnitude across a range.","Charts"],
+["What's the benefit of using Excel Tables for chart data?","Tables auto-expand their range, so charts and formulas referencing the table automatically include new rows.","Charts"],
+["How do you add a trendline to a chart?","Click the chart series → Add Chart Element → Trendline → choose a type (linear, exponential, etc.).","Charts"],
+["What is a waterfall chart used for?","Showing how an initial value is affected by a sequence of positive and negative changes to reach a final value.","Charts"],
+
+// Advanced
+["What does UNIQUE do?","Returns a list of distinct values from a range, spilling the results into adjacent cells.","Advanced"],
+["What does FILTER return if no rows match?","An error (#CALC! by default) unless an if_empty argument is supplied.","Advanced"],
+["What is a spilled array?","The set of cells automatically filled by a dynamic array formula (like FILTER or UNIQUE) beyond the formula's original cell.","Advanced"],
+["How does SORT differ from SORTBY?","SORT sorts a range/array by its own values; SORTBY sorts a range based on values in a different corresponding range.","Advanced"],
+["What does SEQUENCE generate?","An array of sequential numbers given rows, columns, start value, and step.","Advanced"],
+["What is Goal Seek used for?","Finding the input value needed for a formula to reach a specific target output.","Advanced"],
+["What's the difference between a one-variable and two-variable Data Table?","A one-variable table tests one changing input against multiple formula outputs; a two-variable table tests two inputs simultaneously against one formula.","Advanced"],
+["What does Scenario Manager allow you to do?","Save different sets of input values as named scenarios and quickly switch between them to compare outcomes.","Advanced"],
+["What is Solver used for?","Finding optimal input values (max/min/target) for a formula subject to constraints, useful for optimization problems.","Advanced"],
+["What does STDEV.S calculate vs STDEV.P?","STDEV.S estimates standard deviation from a sample; STDEV.P calculates it for an entire population.","Advanced"],
+["What does CORREL measure?","The strength and direction of a linear relationship between two data sets, returning a value between -1 and 1.","Advanced"],
+["What is the difference between TREND and FORECAST?","Both perform linear regression; TREND can return multiple predicted values for an array of new x-values, while FORECAST (legacy) returns a single predicted value for one x.","Advanced"],
+["What is a macro?","A recorded or written sequence of actions (in VBA) that can be replayed to automate repetitive tasks.","Advanced"],
+["How do you assign a macro to a button?","Insert a shape/button (Developer tab or Insert → Shapes), right-click it, and choose Assign Macro.","Advanced"],
+["What file extension must be used to save a workbook containing macros?",".xlsm (Excel Macro-Enabled Workbook).","Advanced"],
+["What does the Developer tab provide access to?","Macro recording/editing, VBA editor, form controls, and add-ins.","Advanced"],
+["What is array formula entry (Ctrl+Shift+Enter) used for in legacy Excel?","Forcing a formula to operate on and return arrays of values rather than a single value — largely unnecessary in modern Excel with dynamic arrays.","Advanced"],
+["How do you create a relative named range vs absolute?","Named ranges default to absolute references; to make one relative, define it while a specific cell is selected and remove the $ signs in Name Manager.","Advanced"],
+["What is the purpose of Excel Tables (Ctrl+T)?","Converting a range into a structured Table that auto-formats, auto-expands, supports structured references, and works seamlessly with Pivots and charts.","Advanced"],
+["How do structured references work in Tables?","Formulas use column names instead of cell addresses, e.g. <code>=Table1[Sales]</code>, making formulas more readable and self-updating.","Advanced"],
+["What does Power Pivot add to Excel?","A data modeling engine for handling large datasets, creating relationships between tables, and writing DAX measures for advanced calculations.","Advanced"]
+];
+
+const qContainer = document.getElementById('q-container');
+function renderQuestions(filterText='', cat='all'){
+  qContainer.innerHTML='';
+  let n=0;
+  questions.forEach((q,i)=>{
+    if(cat!=='all' && q[2]!==cat) return;
+    if(filterText && !q[0].toLowerCase().includes(filterText.toLowerCase()) && !q[1].toLowerCase().includes(filterText.toLowerCase())) return;
+    n++;
+    const det=document.createElement('details');
+    det.className='qcard';
+    det.innerHTML=`<summary><span class="num">Q${i+1}.</span><span>${q[0]}</span><span class="cat">${q[2]}</span></summary><div class="answer">${q[1]}</div>`;
+    qContainer.appendChild(det);
+  });
+  if(n===0){
+    qContainer.innerHTML='<p style="font-family:var(--mono);font-size:13px;color:#9aa79f;">No matching questions.</p>';
+  }
+}
+renderQuestions();
+document.getElementById('q-search').addEventListener('input',e=>{
+  renderQuestions(e.target.value, document.getElementById('q-filter').value);
+});
+document.getElementById('q-filter').addEventListener('change',e=>{
+  renderQuestions(document.getElementById('q-search').value, e.target.value);
+});
+</script>
+</body>
+</html>
